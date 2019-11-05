@@ -7,13 +7,31 @@ import fetchGithubRelease from "./fetchGithubRelease";
  * @param {String} options.minorVersion - e.g: v10.11.9
  *
  */
-async function* getReleasesBetween({
+export default async function* getReleasesBetween({
   majorVersion,
   minorVersion,
   repositoryUrl
 }) {
   const releaseIterator = fetchGithubRelease(repositoryUrl);
+
+  let majorVersionRelease;
+
   for await (const release of releaseIterator) {
-    // TODO: Keep track if we already got the major and minor version
+    if (!majorVersion && !majorVersionRelease) {
+      majorVersionRelease = release;
+    }
+
+    if (release.tagName.toLowerCase() === minorVersion.toLowerCase()) {
+      return release;
+    }
+
+    if (
+      !majorVersionRelease &&
+      release.tagName.toLowerCase() !== majorVersion.toLowerCase()
+    ) {
+      continue;
+    }
+
+    yield release;
   }
 }
