@@ -4,20 +4,10 @@ import apolloClient from "../apollo-client";
 
 const RECORDS_TO_FETCH_DEFAULT = 100;
 
-const getTotalCount = data => get(data, "repository.releases.totalCount", 0);
-
-const getReleases = data =>
-  get(data, "repository.releases.edges", []).map(item => item.node);
-
-const parseRepositoryUrl = repositoryUrl => {
-  const [owner, repository] = repositoryUrl.split("/");
-  return { owner, repository };
-};
-
-const latestReleasesQuery = ({ owner, repository, count }) => gql`
-  {
-    repository(owner: "${owner}", name: "${repository}") {
-      releases(first: ${count}, orderBy: { field: CREATED_AT, direction: DESC }) {
+const LATEST_RELEASES_QUERY = gql`
+  query LatestReleases($owner: String!, $repository: String!, $count: Int!) {
+    repository(owner: $owner, name: $repository) {
+      releases(first: $count, orderBy: { field: CREATED_AT, direction: DESC }) {
         totalCount
         edges {
           node {
@@ -31,15 +21,27 @@ const latestReleasesQuery = ({ owner, repository, count }) => gql`
   }
 `;
 
+const getTotalCount = data => get(data, "repository.releases.totalCount", 0);
+
+const getReleases = data =>
+  get(data, "repository.releases.edges", []).map(item => item.node);
+
+const parseRepositoryUrl = repositoryUrl => {
+  const [owner, repository] = repositoryUrl.split("/");
+  return { owner, repository };
+};
+
 const fetchReleases = async ({
   owner,
   repository,
   count = RECORDS_TO_FETCH_DEFAULT
 } = {}) => {
   try {
-    const { data } = await apolloClient.query(
-      latestReleasesQuery({ owner, repository, count })
-    );
+    const { data } = await apolloClient.query({
+      query: LATEST_RELEASES_QUERY,
+      variables: { owner, repository, count },
+      fetchPolicy: "cache-first"
+    });
     return {
       releases: getReleases(data),
       totalReleases: getTotalCount(data)
@@ -50,12 +52,16 @@ const fetchReleases = async ({
   }
 };
 
-export default async function* fetchGithubRelease(repositoryUrl) {
+export default async function* fetchGithubRelease(
+  repositoryUrl,
+  { count } = {}
+) {
   try {
     const { owner, repository } = parseRepositoryUrl(repositoryUrl);
     let { releases, totalReleases } = await fetchReleases({
       owner,
-      repository
+      repository,
+      count
     });
     let i = 0;
     let totalReleasesIndex = 0;
@@ -64,7 +70,8 @@ export default async function* fetchGithubRelease(repositoryUrl) {
       if (releases[i] === undefined) {
         ({ releases, totalReleases } = await fetchReleases({
           owner,
-          repository
+          repository,
+          count
         }));
 
         i = 0;
