@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext, useCallback } from "react";
 import useForm from "react-hook-form";
+import { AppStateContext } from "../contexts/AppStateContext";
 
 const repositoryErrorMessage = "Repository url is required";
 const currentVersionErrorMessage =
@@ -9,9 +10,14 @@ const errorMessage = message => <p className="help is-danger">{message}</p>;
 
 const ReleaseForm = () => {
   const { register, handleSubmit, errors } = useForm();
-  const onSubmit = data => {
-    console.log(data);
-  };
+  const { setState: setAppState } = useContext(AppStateContext);
+
+  const onSubmit = useCallback(
+    formData => {
+      setAppState({ request: formData });
+    },
+    [setAppState]
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
