@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import * as fetchGithubReleaseModule from "./fetchGithubRelease";
-import getReleasesBetween from "./getReleasesBetween";
+import getGithubReleasesBetween from "./getGithubReleasesBetween";
 
 function stubAsyncGenerator(generatorModule, iteratorValues) {
   return sinon.stub(generatorModule, "default").returns({
@@ -22,7 +22,7 @@ function stubAsyncGenerator(generatorModule, iteratorValues) {
   });
 }
 
-describe("getReleasesBetween", () => {
+describe("getGithubReleasesBetween", () => {
   const mockReleases = [
     { tagName: "v3.0.0" },
     { tagName: "v2.9.0" },
@@ -38,10 +38,10 @@ describe("getReleasesBetween", () => {
   it("should yield releases in range", async () => {
     stubAsyncGenerator(fetchGithubReleaseModule, mockReleases);
 
-    const releaseIterator = getReleasesBetween({
+    const releaseIterator = getGithubReleasesBetween({
       majorVersion: "v2.9.0",
       minorVersion: "v2.8.0",
-      repositoryUrl: "octocat/Hello-World"
+      repository: "octocat/Hello-World"
     });
     const releasesInRange = [];
     for await (const release of releaseIterator) {
@@ -61,9 +61,9 @@ describe("getReleasesBetween", () => {
   it("should yield releases using latest major version", async () => {
     stubAsyncGenerator(fetchGithubReleaseModule, mockReleases);
 
-    const releaseIterator = getReleasesBetween({
+    const releaseIterator = getGithubReleasesBetween({
       minorVersion: "v2.8.0",
-      repositoryUrl: "octocat/Hello-World"
+      repository: "octocat/Hello-World"
     });
     const releasesInRange = [];
     for await (const release of releaseIterator) {
@@ -84,9 +84,9 @@ describe("getReleasesBetween", () => {
   it("should yield releases using oldest minor version", async () => {
     stubAsyncGenerator(fetchGithubReleaseModule, mockReleases);
 
-    const releaseIterator = getReleasesBetween({
+    const releaseIterator = getGithubReleasesBetween({
       majorVersion: "v2.8.0",
-      repositoryUrl: "hawkeng/flash-dictionary"
+      repository: "hawkeng/flash-dictionary"
     });
     const releasesInRange = [];
     for await (const release of releaseIterator) {
@@ -106,8 +106,8 @@ describe("getReleasesBetween", () => {
   it("should yield all releases", async () => {
     stubAsyncGenerator(fetchGithubReleaseModule, mockReleases);
 
-    const releaseIterator = getReleasesBetween({
-      repositoryUrl: "hawkeng/b-forums"
+    const releaseIterator = getGithubReleasesBetween({
+      repository: "hawkeng/b-forums"
     });
     const releasesInRange = [];
     for await (const releases of releaseIterator) {

@@ -3,14 +3,15 @@ import fetchGithubRelease from "./fetchGithubRelease";
 /**
  * Retrieves information of all the releases between two versions (both inclusive)
  * @param {Object} options
- * @param {String} options.majorVersion - e.g: v12.4.8
- * @param {String} options.minorVersion - e.g: v10.11.9
+ * @param {String} options.repository - Repository URL. Example: octocat/Hello-World
+ * @param {String} [options.majorVersion] - e.g: v12.4.8
+ * @param {String} [options.minorVersion] - e.g: v10.11.9
  * @yields {Release}
  */
-export default async function* getReleasesBetween({
+export default async function* getGithubReleasesBetween({
   majorVersion,
   minorVersion,
-  repositoryUrl
+  repository
 }) {
   const majorVersionLowerCase = majorVersion
     ? majorVersion.toLowerCase()
@@ -19,7 +20,7 @@ export default async function* getReleasesBetween({
     ? minorVersion.toLowerCase()
     : null;
 
-  const releaseIterator = fetchGithubRelease(repositoryUrl);
+  const releaseIterator = fetchGithubRelease(repository);
 
   let majorVersionRelease;
 
