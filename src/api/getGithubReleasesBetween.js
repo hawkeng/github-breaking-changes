@@ -24,6 +24,8 @@ export default async function* getGithubReleasesBetween({
 
   let majorVersionRelease;
 
+  // TODO: Test throwing error from fetchGithubRelease
+
   for await (const release of releaseIterator) {
     if (!majorVersionRelease) {
       if (
