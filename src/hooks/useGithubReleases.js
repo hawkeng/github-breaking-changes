@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import getGithubReleasesBetween from "../api/getGithubReleasesBetween";
 import paginatedAsyncIterable from "../utils/paginatedAsyncIterable";
 
@@ -24,7 +24,19 @@ const useGithubReleases = ({
     error: null
   });
 
-  // TODO: USE react-async ???
+  const mountRef = useRef(true);
+  const setStateIfMounted = useCallback(
+    newState => {
+      if (mountRef.current) {
+        setState(newState);
+      }
+    },
+    [mountRef]
+  );
+
+  useEffect(() => {
+    return () => (mountRef.current = null);
+  }, []);
 
   useEffect(() => {
     async function getData() {
@@ -38,9 +50,9 @@ const useGithubReleases = ({
           page,
           pageSize
         });
-        setState({ releases, loading: false, error: null });
+        setStateIfMounted({ releases, loading: false, error: null });
       } catch (err) {
-        setState({ releases: [], loading: false, error: err });
+        setStateIfMounted({ releases: [], loading: false, error: err });
       }
     }
 
