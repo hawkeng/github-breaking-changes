@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import getGithubReleasesBetween from "../api/getGithubReleasesBetween";
 import paginatedAsyncIterable from "../utils/paginatedAsyncIterable";
+import { filterAsync, mapAsync } from "../utils/asyncIterationFunctions";
+import extractBreakingChanges from "../utils/extractBreakingChanges";
 
 /**
  * @param {Object} options
@@ -12,9 +14,9 @@ import paginatedAsyncIterable from "../utils/paginatedAsyncIterable";
  * @param {Number} [options.pageSize=100]
  * @returns {Release[]}
  */
-const useGithubReleases = ({
+const useGithubReleasesWithBreakingChanges = ({
   repository,
-  between,
+  between = {},
   page = 1,
   pageSize = 100
 }) => {
@@ -38,15 +40,31 @@ const useGithubReleases = ({
     return () => (mountRef.current = null);
   }, []);
 
+  const { minorVersion, majorVersion } = between;
   useEffect(() => {
     async function getData() {
       try {
         const releaseIterator = getGithubReleasesBetween({
           repository,
-          ...between
+          minorVersion,
+          majorVersion
         });
+        const releaseWithBreakingIterator = mapAsync(
+          releaseIterator,
+          release => ({
+            ...release,
+            breakingChanges: extractBreakingChanges({
+              text: release.description
+            })
+          })
+        );
+        const onlyBreakingIterator = filterAsync(
+          releaseWithBreakingIterator,
+          release => release.breakingChanges
+        );
+
         const releases = await paginatedAsyncIterable({
-          iterable: releaseIterator,
+          iterable: onlyBreakingIterator,
           page,
           pageSize
         });
@@ -56,10 +74,19 @@ const useGithubReleases = ({
       }
     }
 
-    getData();
-  }, [repository, between, page, pageSize]);
+    if (repository) {
+      getData();
+    }
+  }, [
+    repository,
+    minorVersion,
+    majorVersion,
+    page,
+    pageSize,
+    setStateIfMounted
+  ]);
 
   return state;
 };
 
-export default useGithubReleases;
+export default useGithubReleasesWithBreakingChanges;
