@@ -1,18 +1,10 @@
 import { expect } from "chai";
 import paginatedAsyncIterable from "./paginatedAsyncIterable";
-
-function getAsyncIterable(iterableValues) {
-  const asyncGenerator = async function*() {
-    for (const value of iterableValues) {
-      yield Promise.resolve(value);
-    }
-  };
-  return asyncGenerator();
-}
+import createAsyncIterable from "./createAsyncIterable";
 
 describe("paginatedAsyncIterable", () => {
   it("should resolve first 5 elements", async () => {
-    const asyncIterable = getAsyncIterable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    const asyncIterable = createAsyncIterable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
     const result = await paginatedAsyncIterable({
       iterable: asyncIterable,
@@ -24,7 +16,7 @@ describe("paginatedAsyncIterable", () => {
   });
 
   it("should resolve latest 4 elements", async () => {
-    const asyncIterable = getAsyncIterable([1, 2, 3, 4, 5, 6, 7, 8]);
+    const asyncIterable = createAsyncIterable([1, 2, 3, 4, 5, 6, 7, 8]);
 
     const result = await paginatedAsyncIterable({
       iterable: asyncIterable,
@@ -36,7 +28,7 @@ describe("paginatedAsyncIterable", () => {
   });
 
   it("should resolve middle 2 elements", async () => {
-    const asyncIterable = getAsyncIterable([1, 2, 3, 4, 5, 6]);
+    const asyncIterable = createAsyncIterable([1, 2, 3, 4, 5, 6]);
 
     const result = await paginatedAsyncIterable({
       iterable: asyncIterable,
