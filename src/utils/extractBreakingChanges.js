@@ -22,6 +22,14 @@
  */
 const EXTRACT_REGEX = /#{0,6}\s?(?::\w*:\s)?breaking.?changes?:?\r\n(?:\r\n)?([*+-][\s\S]*?)\r\n\r\n/gi;
 
+/**
+ * @param {Object} options
+ * @param {String} options.text - Release description where the list of breaking
+ *  changes should be
+ * @param {RegExp} [options.regex=EXTRACT_REGEX] - Optional regex to get the
+ *  breaking changes markdown string
+ * @returns {String|null} - Full breaking changes markdown string
+ */
 export default function extractBreakingChanges({
   text,
   regex = EXTRACT_REGEX
@@ -33,5 +41,5 @@ export default function extractBreakingChanges({
     result += captureGroup;
   }
 
-  return result;
+  return result.length ? result : null;
 }
