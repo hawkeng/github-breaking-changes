@@ -14,6 +14,7 @@ const LATEST_RELEASES_QUERY = gql`
             tagName
             createdAt
             url
+            description
           }
         }
       }
