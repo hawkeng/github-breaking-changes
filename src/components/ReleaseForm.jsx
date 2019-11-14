@@ -3,7 +3,7 @@ import useForm from "react-hook-form";
 import { AppStateContext } from "../contexts/AppStateContext";
 
 const repositoryErrorMessage = "Repository url is required";
-const currentVersionErrorMessage =
+const minorVersionErrorMessage =
   "You must provide the version you're currently using";
 
 const errorMessage = message => <p className="help is-danger">{message}</p>;
@@ -39,29 +39,29 @@ const ReleaseForm = () => {
 
       <div className="columns">
         <div className="field column">
-          <label htmlFor="currentVersion" className="label">
-            My Version (Tag)
+          <label htmlFor="minorVersion" className="label">
+            Minor Version (Tag)
           </label>
           <div className="control">
             <input
-              id="currentVersion"
-              name="currentVersion"
+              id="minorVersion"
+              name="minorVersion"
               className="input"
               placeholder="v1.0.0"
               ref={register({ required: true, maxLength: 100 })}
             />
           </div>
-          {errors.currentVersion && errorMessage(currentVersionErrorMessage)}
+          {errors.minorVersion && errorMessage(minorVersionErrorMessage)}
         </div>
 
         <div className="field column">
-          <label htmlFor="compareVersion" className="label">
-            Compare version (Optional)
+          <label htmlFor="majorVersion" className="label">
+            Major version (Optional)
           </label>
           <div className="control">
             <input
-              id="compareVersion"
-              name="compareVersion"
+              id="majorVersion"
+              name="majorVersion"
               className="input"
               placeholder="(Default is latest)"
               ref={register({ maxLength: 100 })}
