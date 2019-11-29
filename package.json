@@ -1,5 +1,5 @@
 {
-  "name": "breaking-changes-tracker",
+  "name": "github-breaking-changes",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
