@@ -1,4 +1,6 @@
-import fetchGithubRelease from "./fetchGithubRelease";
+import fetchGithubReleases from "./fetchGithubReleases";
+import asyncPaginatedResource from "../utils/asyncPaginatedResource";
+import "../typedef";
 
 /**
  * Retrieves information of all the releases between two versions (both inclusive)
@@ -20,11 +22,13 @@ export default async function* getGithubReleasesBetween({
     ? minorVersion.toLowerCase()
     : null;
 
-  const releaseIterator = fetchGithubRelease(repository);
+  const releaseIterator = asyncPaginatedResource(cursor =>
+    fetchGithubReleases({ repositoryUrl: repository, cursor })
+  );
 
   let majorVersionRelease;
 
-  // TODO: Test throwing error from fetchGithubRelease
+  // TODO: Test throwing error from fetchGithubReleases
 
   for await (const release of releaseIterator) {
     if (!majorVersionRelease) {

@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import sinon from "sinon";
-import * as fetchGithubReleaseModule from "./fetchGithubRelease";
+import * as asyncPaginatedResourceModule from "../utils/asyncPaginatedResource";
 import getGithubReleasesBetween from "./getGithubReleasesBetween";
 
 function stubAsyncGenerator(generatorModule, iteratorValues) {
@@ -31,12 +31,12 @@ describe("getGithubReleasesBetween", () => {
   ];
 
   beforeEach(() => {
-    fetchGithubReleaseModule.default.restore &&
-      fetchGithubReleaseModule.default.restore();
+    asyncPaginatedResourceModule.default.restore &&
+      asyncPaginatedResourceModule.default.restore();
   });
 
   it("should yield releases in range", async () => {
-    stubAsyncGenerator(fetchGithubReleaseModule, mockReleases);
+    stubAsyncGenerator(asyncPaginatedResourceModule, mockReleases);
 
     const releaseIterator = getGithubReleasesBetween({
       majorVersion: "v2.9.0",
@@ -52,14 +52,11 @@ describe("getGithubReleasesBetween", () => {
       { tagName: "v2.9.0" },
       { tagName: "v2.8.0" }
     ]);
-    expect(fetchGithubReleaseModule.default.calledOnce).to.be.true;
-    expect(fetchGithubReleaseModule.default.getCall(0).args[0]).to.equal(
-      "octocat/Hello-World"
-    );
+    expect(asyncPaginatedResourceModule.default.calledOnce).to.be.true;
   });
 
   it("should yield releases using latest major version", async () => {
-    stubAsyncGenerator(fetchGithubReleaseModule, mockReleases);
+    stubAsyncGenerator(asyncPaginatedResourceModule, mockReleases);
 
     const releaseIterator = getGithubReleasesBetween({
       minorVersion: "v2.8.0",
@@ -75,14 +72,11 @@ describe("getGithubReleasesBetween", () => {
       { tagName: "v2.9.0" },
       { tagName: "v2.8.0" }
     ]);
-    expect(fetchGithubReleaseModule.default.calledOnce).to.be.true;
-    expect(fetchGithubReleaseModule.default.getCall(0).args[0]).to.equal(
-      "octocat/Hello-World"
-    );
+    expect(asyncPaginatedResourceModule.default.calledOnce).to.be.true;
   });
 
   it("should yield releases using oldest minor version", async () => {
-    stubAsyncGenerator(fetchGithubReleaseModule, mockReleases);
+    stubAsyncGenerator(asyncPaginatedResourceModule, mockReleases);
 
     const releaseIterator = getGithubReleasesBetween({
       majorVersion: "v2.8.0",
@@ -97,14 +91,11 @@ describe("getGithubReleasesBetween", () => {
       { tagName: "v2.8.0" },
       { tagName: "v2.7.0" }
     ]);
-    expect(fetchGithubReleaseModule.default.calledOnce).to.be.true;
-    expect(fetchGithubReleaseModule.default.getCall(0).args[0]).to.equal(
-      "hawkeng/flash-dictionary"
-    );
+    expect(asyncPaginatedResourceModule.default.calledOnce).to.be.true;
   });
 
   it("should yield all releases", async () => {
-    stubAsyncGenerator(fetchGithubReleaseModule, mockReleases);
+    stubAsyncGenerator(asyncPaginatedResourceModule, mockReleases);
 
     const releaseIterator = getGithubReleasesBetween({
       repository: "hawkeng/b-forums"
@@ -115,10 +106,7 @@ describe("getGithubReleasesBetween", () => {
     }
 
     expect(releasesInRange).to.eql(mockReleases);
-    expect(fetchGithubReleaseModule.default.calledOnce).to.be.true;
-    expect(fetchGithubReleaseModule.default.getCall(0).args[0]).to.equal(
-      "hawkeng/b-forums"
-    );
+    expect(asyncPaginatedResourceModule.default.calledOnce).to.be.true;
   });
 
   // TODO: Implement test case
