@@ -3,13 +3,19 @@ import ReactMarkdown from "react-markdown";
 import { AppStateContext } from "../contexts/AppStateContext";
 import useGithubReleasesWithBreakingChanges from "../hooks/useGithubReleasesWithBreakingChanges";
 
+const DateString = ({ children }) => {
+  return children ? new Date(children).toLocaleDateString() : "";
+};
+
 const ReleaseRow = ({ release }) => {
   return (
     <tr>
       <td>
         <a href={release.url}>{release.tagName}</a>
       </td>
-      <td>{release.createdAt}</td>
+      <td>
+        <DateString>{release.createdAt}</DateString>
+      </td>
       <td>
         <ReactMarkdown source={release.breakingChanges} />
       </td>
@@ -23,7 +29,7 @@ const BreakingChangesList = () => {
     ? appState.request
     : {};
   const { releases, loading, error } = useGithubReleasesWithBreakingChanges({
-    pageSize: 25,
+    // pageSize: 25,
     repository,
     between: { majorVersion, minorVersion }
   });
