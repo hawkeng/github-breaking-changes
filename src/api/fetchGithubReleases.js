@@ -20,6 +20,7 @@ const LATEST_RELEASES_QUERY = gql`
       ) {
         totalCount
         edges {
+          cursor
           node {
             tagName
             createdAt
