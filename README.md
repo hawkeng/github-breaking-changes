@@ -2,6 +2,10 @@
 
 This tool provides very basic funcionality. If you would like something more advanced check out [Dependabot](https://dependabot.com/).
 
+
+[Link to the Website](https://github-breaking-changes.netlify.com/)
+
+
 ![UI](assets/UI.png)
 
 
