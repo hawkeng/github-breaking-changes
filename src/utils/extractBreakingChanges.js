@@ -20,6 +20,7 @@
  * double line-break, this is because unordered markdown lists start with such
  * characters.
  */
+// TODO: Make regex user configurable
 const EXTRACT_REGEX = /#{0,6}\s?(?::\w*:\s)?breaking.?changes?:?\r\n(?:\r\n)?([*+-][\s\S]*?)\r\n\r\n/gi;
 
 /**
@@ -37,7 +38,7 @@ export default function extractBreakingChanges({
   let result = "";
   let match;
   while ((match = regex.exec(text)) !== null) {
-    const [_, captureGroup] = match;
+    const [_, captureGroup] = match; // eslint-disable-line no-unused-vars
     result += captureGroup;
   }
 
