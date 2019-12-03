@@ -40,6 +40,11 @@ const apolloClient = new ApolloClient({
 });
 
 exports.githubReleases = functions.https.onRequest(async (req, res) => {
+  res.set(
+    "Access-Control-Allow-Origin",
+    "https://github-breaking-changes.netlify.com"
+  );
+
   const { owner, repository, count = 100, cursor } = req.query;
   const countInt = parseInt(count, 10);
 
