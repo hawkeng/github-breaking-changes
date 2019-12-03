@@ -52,6 +52,9 @@ exports.githubReleases = functions.https.onRequest(async (req, res) => {
 
     res.json(result).end();
   } catch (err) {
-    res.json({ message: err.message }).end();
+    res
+      .status(500)
+      .json({ message: err.message })
+      .end();
   }
 });
