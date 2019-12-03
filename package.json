@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "apollo-boost": "^0.4.4",
     "bulma": "^0.8.0",
-    "graphql": "^14.5.8",
     "lodash.get": "^4.4.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
