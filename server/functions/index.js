@@ -39,9 +39,11 @@ const apolloClient = new ApolloClient({
   fetch
 });
 
-const allowedOrigins = functions.config().security.allowed_origins;
+const whitelistString = functions.config().security.allowed_origins;
+const allowedOrigins = whitelistString ? whitelistString.split(",") : [];
 exports.githubReleases = functions.https.onRequest(async (req, res) => {
-  res.set("Access-Control-Allow-Origin", allowedOrigins);
+  // TODO: Use a single origin, not a string with many
+  res.set("Access-Control-Allow-Origin", getAllowedOrigin(res, allowedOrigins));
 
   const { owner, repository, count = 100, cursor } = req.query;
   const countInt = parseInt(count, 10);
@@ -61,3 +63,11 @@ exports.githubReleases = functions.https.onRequest(async (req, res) => {
       .end();
   }
 });
+
+function getAllowedOrigin(res, allowedOrigins) {
+  const i = allowedOrigins.indexOf(res.get("origin"));
+  if (i >= 0) {
+    return allowedOrigins[i];
+  }
+  return allowedOrigins[0];
+}
